@@ -43,13 +43,34 @@ ggplot(co2, aes(x = decimal_date, y = monthly_average)) +
 
 Describe the overall trend in the CO2 data.
 
-**Answer 1:**
-
+The graph seems to show increasing co2 related to years. So as the years increase, the co2 concentration also increases. With ocscillating co2.
 **Question 2:**
 
 How does CO2 vary within a year?  What month is it at max?  Min?  What might explain this sub-annual pattern? (you will need to write code and make a plot to answer this question)
 
-**Answer 2:**
+```{r}
+
+mean_co2 <- co2 |>
+  group_by(month) |>
+  summarize(monthly_mean = mean(monthly_average))
+
+max_month <- mean_co2 |>
+  filter(monthly_mean == max(monthly_mean))
+
+min_month <- mean_co2 |>
+  filter(monthly_mean == min(monthly_mean))
+
+ggplot(mean_co2, aes(x = month, y = monthly_mean)) + 
+  geom_point() +
+  geom_line()
+
+print(max_month)
+print(min_month)
+  
+#minor fluctuations in the co2 seems to change the subannual pattern it is potentially from a seasonal affect on the amount of co2.
+  
+```
+
 
 
 
@@ -69,7 +90,7 @@ Describe the data set to the best of your ability, given the documentation provi
 - Describe the class of each column and what units it is measured in. 
 - What is the difference between "global temperature" and "global temperature anomaly"? 
 
-**Answer 3:**
+The data is from NASA where is shows the global temperature from 1880 to 2024. The columns would be year and temperature anomaly in Celsius. Global temperature is the current temperature and global temperature anomaly subtracts the global temperature and the average temperature.
 
 
 **Question 4:**
@@ -78,13 +99,47 @@ Construct the necessary R code to import and prepare for plotting the following 
 
 You'll need to determine the file's delimiter and any comments or skips. You will also need to be sure that you have column names. You will not directly use the code above to read the CO2 data, but that code provides helpful tips for reading the data.
 
-**Answer 4:**
+```{r}
+# Load necessary libraries
+library(tidyverse)
+
+# Define the URL to the dataset
+url <- "https://data.giss.nasa.gov/gistemp/graphs/graph_data/Global_Mean_Estimates_based_on_Land_and_Ocean_Data/graph.txt"
+
+
+temperature_data <- read.table(url, 
+                   sep = "",      
+                   header = FALSE,  
+                   skip = 5,        
+                   fill = TRUE)   
+
+
+head(temperature_data)
+
+
+colnames(temperature_data) <- c("Year", "Temperature_anomaly", "Five_Year_Average" )
+
+
+temperature_data$Year <- as.numeric(temperature_data$Year)
+temperature_data$Temperature_anomaly <- as.numeric(temperature_data$Temperature_anomaly)
+temperature_data$Five_Year_Average <- as.numeric(temperature_data$Five_Year_Average)
+
+
+
+
+```
+
 
 **Question 5:**
 
 Plot the trend in global mean temperatures over time.  Describe what you see in the plot and how you interpret the patterns you observe.
 
-**Answer 5:**
+```{r}
+temperature_data |>
+  ggplot(aes(x = Year, y = Temperature_anomaly)) + geom_point() + geom_line()
+
+```
+
 
 ## Evaluating the evidence for a "Pause" in warming?
 
@@ -170,5 +225,5 @@ Remember to Render your document as HTML and comment+push to GitHub your code an
 
 Include citation of any AI-generated assistance or discussion with classmates (per policy in syllabus). Proper documentation of AI-generated assistance includes the prompt, the source (e.g., ChatGPT), and the significant parts of the response.  Proper documentation of discussion with classmates include listing their names and the components discussed.  
 
-
+ChatGPT question 4. How to import a TXT file into R and prepare it for a graph.
 

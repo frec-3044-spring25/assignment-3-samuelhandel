@@ -100,10 +100,7 @@ Construct the necessary R code to import and prepare for plotting the following 
 You'll need to determine the file's delimiter and any comments or skips. You will also need to be sure that you have column names. You will not directly use the code above to read the CO2 data, but that code provides helpful tips for reading the data.
 
 ```{r}
-# Load necessary libraries
-library(tidyverse)
 
-# Define the URL to the dataset
 url <- "https://data.giss.nasa.gov/gistemp/graphs/graph_data/Global_Mean_Estimates_based_on_Land_and_Ocean_Data/graph.txt"
 
 
@@ -151,26 +148,62 @@ You will use rolling averages to help you explore the evidence for a pause. Sinc
 
 Use a search engine (e.g., Google) or a chat LLM to find out how to calculate a rolling average in R. What search term or chat LLM prompt did you use?  What website or answer from the chat LLM did you end up using?  How much did you need to modify the code from the website or chat LLM to answer the question successfully?
 
-**Answer 6:**
+
+```{r}
+#I just searched how to get a rolling average in r this is the website https://www.statology.org/rolling-average-in-r/ 
+```
+
+
 
 **Question 7:**
 
 - What is the meaning of "5-year average" vs. "annual average"?
 - Create a data frame from the annual temperature anomaly data (from Question 4) with three new columns: 5-year running averages, 10-year running averages, and 20-year running averages.
 
-**Answer 7:**
+```{r}
+library(dplyr)
+library(zoo)
+
+temperature_data <- temperature_data %>%
+  mutate(five_year_rolling = rollmean(Temperature_anomaly, k = 5, fill = NA, align = 'right'))
+
+temperature_data <- temperature_data %>%
+  mutate(ten_year_rolling = rollmean(Temperature_anomaly, k = 10, fill = NA, align = 'right')) 
+
+temperature_data <- temperature_data %>%
+  mutate(twenty_year_rolling = rollmean(Temperature_anomaly, k = 20, fill = NA, align = 'right')) 
+
+view(temperature_data)
+
+# A 5 year average is an average of all 5 years then averaged, annual is for the year.
+```
+
+
 
 **Question 8:**
 
 Plot the different averages on the *same plot* and describe what differences you see and why.  
 
-**Answer 8:**
+```{r}
+
+temperature_data_clean <- temperature_data %>%
+  filter(!is.na(five_year_rolling) & !is.na(ten_year_rolling) & !is.na(twenty_year_rolling))
+
+ggplot(temperature_data_clean, aes(x = Year)) +
+  geom_line(aes(y = five_year_rolling, color = "Five-Year Average")) +
+  geom_line(aes(y = ten_year_rolling, color = "Ten-Year Average")) +
+  geom_line(aes(y = twenty_year_rolling, color = "Twenty-Year Average")) 
+
+
+  
+```
+
 
 **Question 9:**
 
 By examining the data here, what evidence do you find or not find for such a pause? 
 
-**Answer 9:**
+
 
 ## Longer term trends in CO2 Records
 
@@ -225,5 +258,6 @@ Remember to Render your document as HTML and comment+push to GitHub your code an
 
 Include citation of any AI-generated assistance or discussion with classmates (per policy in syllabus). Proper documentation of AI-generated assistance includes the prompt, the source (e.g., ChatGPT), and the significant parts of the response.  Proper documentation of discussion with classmates include listing their names and the components discussed.  
 
-ChatGPT question 4. How to import a TXT file into R and prepare it for a graph.
+ChatGPT question 4: How to import a TXT file into R and prepare it for a graph? Also, what is this data reading?
 
+ChatGPT question 8. How to remove NAs from all of the columns?

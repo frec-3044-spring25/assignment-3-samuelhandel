@@ -272,11 +272,9 @@ colnames(combined_data)
 combined_data_clean <- combined_data %>%
   filter(!is.na(year) & !is.na(month) & !is.na(decimal_date) & !is.na(deseasonalized) & !is.na(monthly_average) & !is.na(days)  & !is.na(sd_days) & !is.na(unc_month_mean)) 
 
-# Load required packages
 library(ggplot2)
 library(dplyr)
 
-# Filter out rows with missing values
 combined_data_clean <- combined_data %>%
   filter(!is.na(year) & !is.na(month) & !is.na(decimal_date) & 
          !is.na(deseasonalized) & !is.na(monthly_average) & 
@@ -310,3 +308,5 @@ Include citation of any AI-generated assistance or discussion with classmates (p
 ChatGPT question 4: How to import a TXT file into R and prepare it for a graph? Also, what is this data reading?
 
 ChatGPT question 8. How to remove NAs from all of the columns?
+
+ChatGPT Question 10. 

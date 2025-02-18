@@ -246,9 +246,58 @@ Your answer to Question 10 is going to be a mix of code chunks and text that you
 **Answer 10:**
 
 ```{r}
+icecore_url <- "https://data.ess-dive.lbl.gov/catalog/d1/mn/v2/object/ess-dive-457358fdc81d3a5-20180726T203952542"
+
+icecore_data <- read.table(icecore_url, 
+                   sep = "",      
+                   header = FALSE,  
+                   skip = 20,        
+                   fill = TRUE)  
+colnames(icecore_data) <- c("Depth(M)", "Age of the Ice (yr BP)", "Mean Age of the air (yr BP)", "CO2 concentration (ppmv)" )
+
+icecore_data$`Depth(M)` <- as.numeric(icecore_data$`Depth(M)`)
+icecore_data$`Age of the Ice (yr BP)` <- as.numeric(icecore_data$`Age of the Ice (yr BP)`)
+icecore_data$`Mean Age of the air (yr BP)` <- as.numeric(icecore_data$`Mean Age of the air (yr BP)`)
+icecore_data$`CO2 concentration (ppmv)` <- as.numeric(icecore_data$`CO2 concentration (ppmv)`)
+
+ggplot(icecore_data, aes(x = `Depth(M)`)) +
+  geom_line(aes(y = `Age of the Ice (yr BP)`, color = "`Age of the Ice (yr BP)`")) +
+  geom_line(aes(y = `Mean Age of the air (yr BP)`, color = "`Mean Age of the air (yr BP)`")) +
+  geom_line(aes(y = `CO2 concentration (ppmv)`, color = "`CO2 concentration (ppmv)`")) 
+
+combined_data <- bind_rows(icecore_data,co2)
+
+colnames(combined_data)
+
+combined_data_clean <- combined_data %>%
+  filter(!is.na(year) & !is.na(month) & !is.na(decimal_date) & !is.na(deseasonalized) & !is.na(monthly_average) & !is.na(days)  & !is.na(sd_days) & !is.na(unc_month_mean)) 
+
+# Load required packages
+library(ggplot2)
+library(dplyr)
+
+# Filter out rows with missing values
+combined_data_clean <- combined_data %>%
+  filter(!is.na(year) & !is.na(month) & !is.na(decimal_date) & 
+         !is.na(deseasonalized) & !is.na(monthly_average) & 
+         !is.na(days) & !is.na(sd_days) & !is.na(unc_month_mean))
+
+
+ggplot(combined_data_clean, aes(x = `Depth(M)`)) +
+  geom_line(aes(y = `Age of the Ice (yr BP)`, color = "Age of the Ice (yr BP)")) +
+  geom_line(aes(y = `Mean Age of the air (yr BP)`, color = "Mean Age of the air (yr BP)")) +
+  geom_line(aes(y = `CO2 concentration (ppmv)`, color = "CO2 concentration (ppmv)")) +
+  geom_line(aes(y = deseasonalized, color = "Deseasonalized")) +
+  geom_line(aes(y = monthly_average, color = "Monthly Average")) +
+  geom_line(aes(y = days, color = "Days")) +
+  geom_line(aes(y = sd_days, color = "SD of Days")) +
+  geom_line(aes(y = unc_month_mean, color = "Uncertainty of Monthly Mean"))
+
+
 
 
 ```
+
 
 # Render and committing
 
